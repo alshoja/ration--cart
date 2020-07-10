@@ -1,0 +1,32 @@
+{
+  "name": "ration-cart",
+  "version": "1.0.0",
+  "description": "Web based ration cart",
+  "main": "/src/app.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node ./src/server/server.ts",
+    "start": "nodemon ./dist/server.js",
+    "prod": "npm run build && npm run start"
+  },
+  "author": "alshoja",
+  "license": "ISC",
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/body-parser": "^1.19.0",
+    "@types/dotenv": "^8.2.0",
+    "@types/mongoose": "^5.7.30",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.0",
+    "mongoose": "^5.9.22",
+    "nodemon": "^2.0.4",
+    "ts-mongoose": "0.0.21"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.7",
+    "@types/node": "^14.0.22"
+  }
+}
