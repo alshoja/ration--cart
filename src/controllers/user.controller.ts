@@ -2,9 +2,7 @@ import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
-import { UserSchema } from '../models/user.model';
-
-const User = mongoose.model('User', UserSchema);
+import { User } from '../models/user.model';
 
 export class UserController {
 

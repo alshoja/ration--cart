@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
     name: {
         type: String,
     },
@@ -18,3 +18,5 @@ export const UserSchema = new Schema({
     //     ref:'Product'
     // }]
 }, { timestamps: true })
+export const User = mongoose.model('User', UserSchema);
+
