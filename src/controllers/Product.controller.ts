@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Product } from '../models/Product.model';
+import HttpException from '../exceptions/HttpErrorException';
+
 
 export class ProductController {
 
@@ -19,9 +21,7 @@ export class ProductController {
         const id = req.params.productId;
         Product.findById(id).then(product => {
             if (!product) {
-                const error: any = new Error('No item found');
-                error.status = 404;
-                throw error;
+                next(new HttpException(404, 'Product not found', res));
             }
             res.status(200).json({ product: product });
         }).catch(err => {
@@ -46,7 +46,6 @@ export class ProductController {
         });
 
         product.save().then(productDetails => {
-            console.log(productDetails);
             res.status(200).json({
                 message: 'Product saved!',
                 product: productDetails
@@ -63,15 +62,11 @@ export class ProductController {
         const productId = req.params.productId;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            const error: any = new Error('Validation failed, entered data is incorrect.');
-            error.status = 422;
-            throw error;
+            next(new HttpException(422, 'Validation failed', res));
         }
         Product.findById(productId).then((product: any) => {
             if (!product) {
-                const error: any = new Error('No item found');
-                error.status = 404;
-                throw error;
+                next(new HttpException(404, 'Product not found', res));
             }
             product.name = req.body.name;
             product.image = req.body.image;
@@ -94,9 +89,7 @@ export class ProductController {
         Product.findById(productId)
             .then(product => {
                 if (!product) {
-                    const error: any = new Error('No item found');
-                    error.status = 404;
-                    throw error;
+                    next(new HttpException(404, 'Product not found', res));
                 }
                 return Product.findByIdAndRemove(productId)
             }).then(productDeleted => {

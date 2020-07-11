@@ -5,6 +5,9 @@ import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { Routes } from './routes/Router'
 import errorMiddleware from "../src/middlewares/Error.middleware";
+import * as morgan from 'morgan';
+import * as fs from 'fs';
+import * as path from 'path';
 
 class App {
     public app: express.Application;
@@ -13,6 +16,7 @@ class App {
 
     constructor() {
         this.app = express();
+        this.logStream();
         this.config();
         this.setHeaders()
         this.handleError();
@@ -38,14 +42,10 @@ class App {
         });
     }
 
-    // private handleError() {
-    //     this.app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-    //         console.log(error);
-    //         const status = error.status || 500;
-    //         const message = error.message;
-    //         res.status(status).json({ message: message });
-    //     });
-    // }
+    private logStream() {
+        const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+        this.app.use(morgan('combined', { stream: accessLogStream }))
+    }
 
     private handleError() {
         this.app.use(errorMiddleware);

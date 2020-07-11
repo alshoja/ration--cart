@@ -21,9 +21,10 @@ export class Routes {
                 body('username').trim().isEmail().withMessage('Please enter a valid email.'),
                 body('password').trim().isLength({ min: 5 }),
             ], this.authController.login)
+
         /*/ @User Routes  /*/
         app.route('/users').get(this.auth.isLoggedin, this.userController.getUsers)
-        app.route('/user').post(
+        app.route('/user').post(this.auth.isLoggedin,
             [
                 body('username').isEmail()
                     .withMessage('Please enter a valid email.')
@@ -37,18 +38,44 @@ export class Routes {
                     .normalizeEmail(),
                 body('password').trim().isLength({ min: 5 }),
                 body('name').trim().not().notEmpty()
-
             ], this.userController.addUser)
         app.route('/user/:userId')
             .get(this.userController.getUser)
-            .put(this.userController.updateUser)
+            .put([
+                body('username').isEmail()
+                    .withMessage('Please enter a valid email.')
+                    .custom((value, { req }) => {
+                        return User.findOne({ username: value }).then(user => {
+                            if (user) {
+                                return Promise.reject('E-mail already exists')
+                            }
+                        })
+                    })
+                    .normalizeEmail(),
+                body('password').trim().isLength({ min: 5 }),
+                body('name').trim().not().notEmpty()
+            ], this.userController.updateUser)
             .delete(this.userController.deleteUser)
+
         /*/  Product Routes/*/
         app.route('/products').get(this.productController.getProducts)
-        app.route('/product').post(this.productController.addProduct)
+        app.route('/product').post(this.auth.isLoggedin,
+            [
+                body('name').trim().isLength({ min: 4 }),
+                body('image').trim(),
+                body('rate').trim().isNumeric({ no_symbols: true }),
+                body('category').trim(),
+                body('description').trim(),
+            ], this.productController.addProduct)
         app.route('/product/:productId')
             .get(this.productController.getProduct)
-            .put(this.productController.updateProduct)
+            .put(this.auth.isLoggedin, [
+                body('name').trim().isLength({ min: 4 }),
+                body('image').trim(),
+                body('rate').trim().isNumeric({ no_symbols: true }),
+                body('category').trim(),
+                body('description').trim(),
+            ], this.productController.updateProduct)
             .delete(this.productController.deleteProduct)
     }
 }

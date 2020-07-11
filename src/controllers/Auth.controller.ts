@@ -2,6 +2,7 @@ import * as bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User.model';
 import * as jwt from 'jsonwebtoken'
+import HttpException from '../exceptions/HttpErrorException';
 
 export class AuthController {
     public login(req: Request, res: Response, next: NextFunction) {
@@ -9,17 +10,13 @@ export class AuthController {
         User.findOne({ username: req.body.username })
             .then((user: any) => {
                 if (!user) {
-                    const error: any = new Error('A user or email could not be found');
-                    error.status = 401;
-                    throw error;
+                    next(new HttpException(401, 'A user or email could not be found', res));
                 }
                 loadedUser = user;
                 return bcrypt.compare(req.body.password, user.password)
             }).then(isEqual => {
                 if (!isEqual) {
-                    const error: any = new Error('Wrong password !');
-                    error.status = 401;
-                    throw error;
+                    next(new HttpException(401, 'Incorrect password!', res));
                 }
                 const token = jwt.sign({
                     email: loadedUser.email,

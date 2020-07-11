@@ -1,9 +1,8 @@
-import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { Request, Response, NextFunction } from 'express';
+import HttpException from '../exceptions/HttpErrorException';
 import { User } from '../models/User.model';
-import HttpException from '../exceptions/HttpException';
 
 export class UserController {
 
@@ -63,9 +62,7 @@ export class UserController {
         const userId = req.params.userId;
         User.findById(userId).then((user: any) => {
             if (!user) {
-                const error: any = new Error('No user found');
-                error.status = 404;
-                throw error;
+                next(new HttpException(404, 'User not found', res));
             }
             user.name = req.body.name;
             user.username = req.body.username;
@@ -85,9 +82,7 @@ export class UserController {
         const userId = req.params.userId;
         User.findById(userId).then(user => {
             if (!user) {
-                const error: any = new Error('No user found');
-                error.status = 404;
-                throw error;
+                next(new HttpException(404, 'User not found', res));
             }
             return User.findByIdAndRemove(userId).then(user => {
                 res.status(200).json({ message: 'User deleted', user: user });
