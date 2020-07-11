@@ -9,7 +9,7 @@
       "baseUrl": "./src"
   },
   "include": [
-      "src/**/*.ts", "src/app.ts", "src/controllers/account.auth.controller.ts"
+      "src/**/*.ts", "src/app.ts", "src/controllers/Auth.controller.ts"
   ],
   "exclude": [
       "node_modules"

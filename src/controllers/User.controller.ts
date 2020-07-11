@@ -2,7 +2,8 @@ import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../models/user.model';
+import { User } from '../models/User.model';
+import HttpException from '../exceptions/HttpException';
 
 export class UserController {
 
@@ -10,8 +11,8 @@ export class UserController {
         User.find().then(users => {
             res.status(200).json({ users: users })
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         });
@@ -21,14 +22,12 @@ export class UserController {
         const userId = req.params.userId;
         User.findById(userId).then(user => {
             if (!user) {
-                const error: any = new Error('No user found');
-                error.statusCode = 404;
-                throw error;
+                next(new HttpException(404, 'User not found', res));
             }
             res.status(200).json({ user: user })
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         })
@@ -49,8 +48,8 @@ export class UserController {
                 res.status(200).json({ message: 'User successfully registered !', userId: user._id })
             })
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500
+            if (!err.status) {
+                err.status = 500
             }
             next(err);
         })
@@ -65,7 +64,7 @@ export class UserController {
         User.findById(userId).then((user: any) => {
             if (!user) {
                 const error: any = new Error('No user found');
-                error.statusCode = 404;
+                error.status = 404;
                 throw error;
             }
             user.name = req.body.name;
@@ -75,8 +74,8 @@ export class UserController {
         }).then(user => {
             res.status(200).json({ message: 'User updated !', user: user })
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         })
@@ -87,14 +86,14 @@ export class UserController {
         User.findById(userId).then(user => {
             if (!user) {
                 const error: any = new Error('No user found');
-                error.statusCode = 404;
+                error.status = 404;
                 throw error;
             }
             return User.findByIdAndRemove(userId).then(user => {
                 res.status(200).json({ message: 'User deleted', user: user });
             }).catch(err => {
-                if (!err.statusCode) {
-                    err.statusCode = 500;
+                if (!err.status) {
+                    err.status = 500;
                 }
                 next(err);
             })

@@ -1,7 +1,6 @@
-import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../models/user.model';
+import { User } from '../models/User.model';
 import * as jwt from 'jsonwebtoken'
 
 export class AuthController {
@@ -11,7 +10,7 @@ export class AuthController {
             .then((user: any) => {
                 if (!user) {
                     const error: any = new Error('A user or email could not be found');
-                    error.statusCode = 401;
+                    error.status = 401;
                     throw error;
                 }
                 loadedUser = user;
@@ -19,7 +18,7 @@ export class AuthController {
             }).then(isEqual => {
                 if (!isEqual) {
                     const error: any = new Error('Wrong password !');
-                    error.statusCode = 401;
+                    error.status = 401;
                     throw error;
                 }
                 const token = jwt.sign({
@@ -28,8 +27,8 @@ export class AuthController {
                 }, 'secret', { expiresIn: '24h' });
                 res.status(200).json({ token: token, userId: loadedUser._id.toString() });
             }).catch(err => {
-                if (!err.statusCode) {
-                    err.statusCode = 500;
+                if (!err.status) {
+                    err.status = 500;
                 }
                 next(err);
             });

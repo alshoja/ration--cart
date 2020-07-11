@@ -3,7 +3,8 @@ import * as bodyParser from "body-parser";
 import { Request, Response, NextFunction } from "express";
 import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
-import { Routes } from '../src/routes/router'
+import { Routes } from './routes/Router'
+import errorMiddleware from "../src/middlewares/Error.middleware";
 
 class App {
     public app: express.Application;
@@ -26,7 +27,7 @@ class App {
     }
 
     private setHeaders() {
-        this.app.use((_req: Request, res: Response, next: NextFunction) => {
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader(
                 'Access-Control-Allow-Methods',
@@ -37,19 +38,23 @@ class App {
         });
     }
 
+    // private handleError() {
+    //     this.app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+    //         console.log(error);
+    //         const status = error.status || 500;
+    //         const message = error.message;
+    //         res.status(status).json({ message: message });
+    //     });
+    // }
+
     private handleError() {
-        this.app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-            console.log(error);
-            const status = error.statusCode || 500;
-            const message = error.message;
-            res.status(status).json({ message: message });
-        });
+        this.app.use(errorMiddleware);
     }
 
     private mongoSetup() {
         mongoose.connect(this.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-            .then(res => { console.log('mongodb connected') })
-            .catch(err => { console.log('mongo error in connection:', err) });
+            .then(res => { console.log('DB Connected') })
+            .catch(err => { console.log('Error in mongo connection:', err) });
     }
 }
 export default new App().app;

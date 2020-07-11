@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { Product } from '../models/product.model';
+import { Product } from '../models/Product.model';
 
 export class ProductController {
 
@@ -8,8 +8,8 @@ export class ProductController {
         Product.find().then(products => {
             res.status(200).json({ products: products });
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         });
@@ -20,13 +20,13 @@ export class ProductController {
         Product.findById(id).then(product => {
             if (!product) {
                 const error: any = new Error('No item found');
-                error.statusCode = 404;
+                error.status = 404;
                 throw error;
             }
             res.status(200).json({ product: product });
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         });
@@ -52,8 +52,8 @@ export class ProductController {
                 product: productDetails
             })
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         });
@@ -64,13 +64,13 @@ export class ProductController {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             const error: any = new Error('Validation failed, entered data is incorrect.');
-            error.statusCode = 422;
+            error.status = 422;
             throw error;
         }
         Product.findById(productId).then((product: any) => {
             if (!product) {
                 const error: any = new Error('No item found');
-                error.statusCode = 404;
+                error.status = 404;
                 throw error;
             }
             product.name = req.body.name;
@@ -82,8 +82,8 @@ export class ProductController {
         }).then(details => {
             res.status(200).json({ message: 'Product updated!', product: details });
         }).catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+            if (!err.status) {
+                err.status = 500;
             }
             next(err);
         });
@@ -95,15 +95,15 @@ export class ProductController {
             .then(product => {
                 if (!product) {
                     const error: any = new Error('No item found');
-                    error.statusCode = 404;
+                    error.status = 404;
                     throw error;
                 }
                 return Product.findByIdAndRemove(productId)
             }).then(productDeleted => {
                 res.status(200).json({ message: 'Product deleted', product: productDeleted });
             }).catch(err => {
-                if (!err.statusCode) {
-                    err.statusCode = 500;
+                if (!err.status) {
+                    err.status = 500;
                 }
                 next(err);
             });

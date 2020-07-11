@@ -1,8 +1,10 @@
-import { Request, NextFunction, Response } from "express";
+import { NextFunction, Response } from "express";
 import * as jwt from "jsonwebtoken"
+import { IRequest } from "../utils/Irequest.interface";
+
 
 export class AuthMiddleware {
-    public isLoggedin(req: any, res: Response, next: NextFunction) {
+    public isLoggedin(req: IRequest, res: Response, next: NextFunction) {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             const error: any = new Error('Not authenticated');
