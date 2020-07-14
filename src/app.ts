@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose';
 import { Routes } from './routes/Router'
 import * as morgan from 'morgan';
 import * as fs from 'fs';
+import * as cors from 'cors';
 import * as path from 'path';
 import * as multer from 'multer';
 
@@ -27,6 +28,7 @@ class App {
         dotenv.config();
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(cors())
         this.mongoSetup();
         this.upload();
         this.log();
