@@ -2,7 +2,7 @@
 
 This project was generated with [Express Js](https://expressjs.com/) version 4.17.7.
 
-## Installing process for Local eniviroment
+## Local eniviroment
 
 * Download node [Node Latest](https://nodejs.org/en/)
 * Open the project in vs code or any other IDE  run `npm install` on terminal
