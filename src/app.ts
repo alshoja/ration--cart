@@ -3,7 +3,7 @@ import * as bodyParser from "body-parser";
 import { Request, Response, NextFunction } from "express";
 import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
-import { Routes } from './routes/Router'
+import { Routes } from './app/routes/Router'
 import * as morgan from 'morgan';
 import * as fs from 'fs';
 import * as cors from 'cors';
