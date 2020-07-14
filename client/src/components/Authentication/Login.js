@@ -11,14 +11,11 @@ const Login = props => {
 
   const handleLogin = async () => {
     const name = 'testuser';
-    try {
-      let { data } = await login(name, email, password);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      console.log('finalluy');
-    }
+    fakeauth();
+  };
+
+  const fakeauth = () => {
+    setCredentials('ntihin@gmail.com', 'fehfegeffbe-token');
   };
 
   useEffect(() => {

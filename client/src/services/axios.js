@@ -39,14 +39,12 @@ export const setAxiosIntercepts = () => {
       return response;
     },
     function(error) {
-      debugger;
-      // if (401 === error.) {
-      //   // Redirect to login route
-      //   return Promise.reject(error);
-      // } else {
-      //   return Promise.reject(error);
-      // }
-      console.log(error);
+      if (401 === error) {
+        // Redirect to login route
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(error);
+      }
     }
   );
 };

@@ -1,9 +1,11 @@
 import axios from 'axios';
-const base_url = 'localhost:3000';
-export const login = (name, email, password) => {
+
+const base_url = 'http://localhost:3000'; // will be moved to env
+
+export const sinup = (name, email, password) => {
   axios.post(`${base_url}/user`, {
     name: 'TestUer',
-    email: email,
+    username: email,
     password: password
   });
 };
