@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import HttpException from '../exceptions/HttpErrorException';
@@ -37,14 +38,19 @@ export class UserController {
         if (!validationErrors.isEmpty()) {
             return res.status(422).json({ message: 'Validation failed', errors: validationErrors.array() })
         }
+        
         bcrypt.hash(req.body.password, 12).then(hashedPw => {
             const user = new User({
                 name: req.body.name,
                 username: req.body.username,
                 password: hashedPw
             });
-            user.save().then(user => {
-                res.status(200).json({ message: 'User successfully registered !', userId: user._id })
+            user.save().then((user: any) => {
+                const token = jwt.sign({
+                    email: user.email,
+                    userId: user._id.toString()
+                }, 'secret', { expiresIn: '24h' });
+                res.status(200).json({ token: token, userId: user._id.toString() });
             })
         }).catch(err => {
             if (!err.status) {
