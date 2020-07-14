@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as cors from 'cors';
 import * as path from 'path';
 import * as multer from 'multer';
+
 class App {
     public app: express.Application;
     public route: Routes = new Routes();

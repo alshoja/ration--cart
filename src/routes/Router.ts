@@ -25,7 +25,7 @@ export class Routes {
 
         /*/ @User Routes  /*/
         app.route('/users').get(this.auth.isLoggedin, this.userController.getUsers)
-        app.route('/user').post(this.auth.isLoggedin,
+        app.route('/user').post(
             [
                 body('username').isEmail()
                     .withMessage('Please enter a valid email.')
