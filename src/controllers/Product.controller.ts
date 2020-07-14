@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Product } from '../models/Product.model';
 import HttpException from '../exceptions/HttpErrorException';
+import { clearImage } from '../utils/File.handler';
 
 
 export class ProductController {
@@ -33,13 +34,19 @@ export class ProductController {
     }
 
     public addProduct(req: Request, res: Response, next: NextFunction) {
+        console.log('file', req.file)
+        console.log('bodey', req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ message: 'Validation failed', errors: errors.array() })
         }
+        if (!req.file) {
+            next(new HttpException(422, 'No image provided', res))
+        }
+        const imageUrl = req.file.path;
         const product = new Product({
             name: req.body.name,
-            image: req.body.image,
+            image: imageUrl,
             rate: req.body.rate,
             category: req.body.category,
             description: req.body.description,
@@ -64,12 +71,22 @@ export class ProductController {
         if (!errors.isEmpty()) {
             next(new HttpException(422, 'Validation failed', res));
         }
+        let imageUrl = req.body.image;
+        if (req.file) {
+            imageUrl = req.file.path;
+        }
+        if (!imageUrl) {
+            next(new HttpException(422, 'No file picked', res));
+        }
         Product.findById(productId).then((product: any) => {
             if (!product) {
                 next(new HttpException(404, 'Product not found', res));
             }
+            if (imageUrl !== product.imageUrl) {
+                clearImage(product.imageUrl);
+            }
             product.name = req.body.name;
-            product.image = req.body.image;
+            product.image = imageUrl;
             product.rate = req.body.rate;
             product.category = req.body.category;
             product.description = req.body.description;

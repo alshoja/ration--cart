@@ -4,10 +4,12 @@ import { Request, Response, NextFunction } from "express";
 import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { Routes } from './routes/Router'
-import errorMiddleware from "../src/middlewares/Error.middleware";
 import * as morgan from 'morgan';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as multer from 'multer';
+
+
 
 class App {
     public app: express.Application;
@@ -16,18 +18,18 @@ class App {
 
     constructor() {
         this.app = express();
-        this.logStream();
         this.config();
-        this.setHeaders()
-        this.handleError();
+        this.setHeaders();
         this.route.routes(this.app);
-        this.mongoSetup()
     }
 
     private config(): void {
         dotenv.config();
         this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.mongoSetup();
+        this.upload();
+        this.log();
     }
 
     private setHeaders() {
@@ -41,14 +43,33 @@ class App {
             next();
         });
     }
+    private upload() {
+        const fileStorage = multer.diskStorage({
+            destination: (req: Request, file: any, cb: CallableFunction) => {
+                cb(null, 'src/uploads');
+            },
+            filename: (req: Request, file: any, cb: CallableFunction) => {
+                cb(null, new Date().toISOString() + '-' + file.originalname);
+            }
+        });
 
-    private logStream() {
-        const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-        this.app.use(morgan('combined', { stream: accessLogStream }))
+        const fileFilter = (req: Request, file: any, cb: CallableFunction) => {
+            if (
+                file.mimetype === 'image/png' ||
+                file.mimetype === 'image/jpg' ||
+                file.mimetype === 'image/jpeg'
+            ) {
+                cb(null, true);
+            } else {
+                cb(null, false);
+            }
+        };
+        this.app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
     }
 
-    private handleError() {
-        this.app.use(errorMiddleware);
+    private log() {
+        const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+        this.app.use(morgan('combined', { stream: accessLogStream }))
     }
 
     private mongoSetup() {

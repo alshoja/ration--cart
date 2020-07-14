@@ -15,6 +15,7 @@ export class Routes {
     private auth: AuthMiddleware = new AuthMiddleware();
 
     public routes(app: express.Application): void {
+
         /*/@Auth Routes /*/
         app.route('/login').post(
             [
@@ -59,11 +60,10 @@ export class Routes {
 
         /*/  Product Routes/*/
         app.route('/products').get(this.productController.getProducts)
-        app.route('/product').post(this.auth.isLoggedin,
+        app.route('/product').post(
             [
-                body('name').trim().isLength({ min: 4 }),
-                body('image').trim(),
-                body('rate').trim().isNumeric({ no_symbols: true }),
+                body('name').trim().isLength({ min: 4 }).withMessage('Atleast '),
+                body('rate').trim().isNumeric({ no_symbols: true }).withMessage('Should be number'),
                 body('category').trim(),
                 body('description').trim(),
             ], this.productController.addProduct)
