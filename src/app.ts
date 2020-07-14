@@ -45,7 +45,7 @@ class App {
     private upload() {
         const fileStorage = multer.diskStorage({
             destination: (req: Request, file: any, cb: CallableFunction) => {
-                cb(null, 'src/uploads');
+                cb(null, path.join(__dirname, '/app/assets/uploads'));
             },
             filename: (req: Request, file: any, cb: CallableFunction) => {
                 cb(null, new Date().toISOString() + '-' + file.originalname);
@@ -67,7 +67,7 @@ class App {
     }
 
     private log() {
-        const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+        const accessLogStream = fs.createWriteStream(path.join(__dirname, '/server/logs/access.log'), { flags: 'a' })
         this.app.use(morgan('combined', { stream: accessLogStream }))
     }
 
